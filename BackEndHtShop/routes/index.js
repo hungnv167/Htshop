@@ -190,4 +190,33 @@ router.post('/checkout', (req, res, next) =>{
     })
     .catch(err => res.send('err '+err))
 })
+router.get('/get_bills',(req, res, next) =>{
+  if(!req.query.idUser){
+    res.json({
+      result: "failed"
+    })
+  }
+  Bill.find({idUser: mongoose.Types.ObjectId(req.query.idUser)}).sort({created_date: 1}).select({
+    _id: 1,
+    status: 1,
+    total: 1,
+    created_date: 1
+  }).exec((err,item) =>{
+    if(err){
+      res.json({
+        result: "failed",
+        message: `error: ${err}`
+      })
+    }
+    else{
+      res.json({
+        result: "ok",
+        data: item,
+        count : item.length,
+        message: "Query list of product successfully"
+      })
+    } 
+  })
+})
+
 module.exports = router;
